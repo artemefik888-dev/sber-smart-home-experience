@@ -1,5 +1,8 @@
+import { createDemoSnapshot, DemoTimeline, sceneVisualMode } from "./demo-engine.mjs";
+
 const ROOM_ASSET = (name) => `./assets/rooms/${name}.jpg`;
 const PRODUCT_ASSET = (sku) => `./assets/products/${sku.toLowerCase()}.png`;
+const ROOM_ASPECT = { living: "720 / 540", kitchen: "640 / 572", entry: "589 / 440", corridor: "589 / 440", bedroom: "589 / 440", nursery: "589 / 440", bath: "589 / 440", toilet: "589 / 440" };
 
 const SOURCE = {
   entry: "https://cdn-app.sberdevices.ru/misc/0.0.0/assets/sd-help/43f7be1c_Prikhozhaya_—_bazovii,_komfort,_maksimum.pdf",
@@ -54,10 +57,10 @@ const ROOMS = [
     id: "entry", name: "Прихожая", asset: "entry", sourceUrl: SOURCE.entry, shortNote: "Официальное решение по комнате",
     intro: "Свет встречает у двери, а дом сообщает, когда вход открывается.",
     hotspots: [
-      { id: "door", label: "Датчик открытия", sku: "SBDV-00030", x: 14, y: 29, scene: "home" },
-      { id: "switch", label: "Выключатель AtlasDesign", sku: "SWITCH_2", x: 34, y: 50, scene: "home" },
-      { id: "motion", label: "Датчик движения", sku: "SBDV-00029", x: 70, y: 63, scene: "night-entry" },
-      { id: "hub", label: "Хаб для сценариев", sku: "SBDV-00068", x: 83, y: 31, scene: "door-watch" },
+      { id: "door", label: "Датчик открытия · на дверной коробке", sku: "SBDV-00030", x: 20, y: 15, scene: "home" },
+      { id: "switch", label: "Выключатель AtlasDesign · на стене у входа", sku: "SWITCH_2", x: 49, y: 49, scene: "home" },
+      { id: "motion", label: "Датчик движения · верх стены с обзором", sku: "SBDV-00029", x: 78, y: 15, scene: "night-entry" },
+      { id: "hub", label: "Хаб · на доступной поверхности", sku: "SBDV-00068", x: 12, y: 57, scene: "door-watch" },
     ],
     scenarios: [
       { id: "home", name: "Я дома", cat: "light", before: "В прихожей темно", trigger: "Дверь открывается", result: "Основной свет включён", reason: "Датчик открытия передаёт событие хабу. Выключатель включает обычный светильник.", products: ["SBDV-00030", "SWITCH_2"], effect: "light", requiresHub: true, sourceUrl: SOURCE.entry, shortNote: "Официальная комнатная логика, состав пересчитан по РРЦ" },
@@ -69,9 +72,9 @@ const ROOMS = [
     id: "corridor", name: "Коридор", asset: "corridor", sourceUrl: SOURCE.lighting, shortNote: "Демо-сценарий",
     intro: "Проход становится безопаснее ночью, а основной свет остаётся привычным.",
     hotspots: [
-      { id: "motion", label: "Датчик движения", sku: "SBDV-00029", x: 24, y: 32, scene: "night-route" },
-      { id: "strip", label: "Умная лента", sku: "SBDV-00033", x: 58, y: 70, scene: "night-route" },
-      { id: "switch", label: "Выключатель AtlasDesign", sku: "SWITCH_1", x: 83, y: 43, scene: "corridor-light" },
+      { id: "motion", label: "Датчик движения · верх стены с обзором", sku: "SBDV-00029", x: 69, y: 15, scene: "night-route" },
+      { id: "strip", label: "Умная лента · вдоль нижней подсветки прохода", sku: "SBDV-00033", x: 62, y: 82, scene: "night-route" },
+      { id: "switch", label: "Выключатель AtlasDesign · на стене у проёма", sku: "SWITCH_1", x: 82, y: 49, scene: "corridor-light" },
     ],
     scenarios: [
       { id: "night-route", name: "Ночной маршрут", cat: "light", before: "Коридор тёмный", trigger: "Человек проходит", result: "Включилась мягкая подсветка", reason: "Датчик движения запускает ленту. Яркость и оттенок меняются только у умной ленты.", products: ["SBDV-00029", "SBDV-00033"], effect: "motion", requiresHub: true, sourceUrl: SOURCE.lighting, shortNote: "Демо-сценарий на официальных устройствах" },
@@ -83,41 +86,41 @@ const ROOMS = [
     id: "living", name: "Гостиная", asset: "living", sourceUrl: SOURCE.living, shortNote: "Официальное решение по комнате",
     intro: "Обычный свет, атмосфера и тепло собираются в понятные вечерние сценарии.",
     hotspots: [
-      { id: "switch", label: "Выключатель AtlasDesign", sku: "SWITCH_2", x: 18, y: 48, scene: "evening" },
-      { id: "strip", label: "Умная лента", sku: "SBDV-00033", x: 64, y: 32, scene: "evening" },
-      { id: "climate", label: "Датчик климата", sku: "SBDV-00079", x: 46, y: 67, scene: "warm-living" },
-      { id: "radiator", label: "Терморегулятор радиатора", sku: "SBDV-00185", x: 82, y: 65, scene: "warm-living" },
-      { id: "socket", label: "Умная розетка", sku: "SBDV-00123W", x: 88, y: 36, scene: "away-living" },
+      { id: "switch", label: "Выключатель AtlasDesign · на внутренней стене", sku: "SWITCH_2", x: 29, y: 49, scene: "evening" },
+      { id: "strip", label: "Умная лента · в потолочном контуре", sku: "SBDV-00033", x: 54, y: 12, scene: "evening" },
+      { id: "climate", label: "Датчик климата · на внутренней стене, вне кадра", sku: "SBDV-00079", x: 8, y: 34, scene: "warm-living", outboard: true },
+      { id: "radiator", label: "Терморегулятор · у клапана радиатора", sku: "SBDV-00185", x: 34, y: 59, scene: "warm-living" },
+      { id: "socket", label: "Умная розетка · у стены, вне кадра", sku: "SBDV-00123W", x: 92, y: 72, scene: "away-living", outboard: true },
     ],
     scenarios: [
       { id: "evening", name: "Вечер дома", cat: "light", before: "Комната освещена обычно", trigger: "Нажатие сценария", result: "Основной свет и атмосфера готовы", reason: "Выключатель управляет обычным светом, а лента добавляет регулируемую атмосферную подсветку.", products: ["SWITCH_2", "SBDV-00033"], effect: "light", requiresHub: true, sourceUrl: SOURCE.living, shortNote: "Официальное решение по комнате" },
       { id: "away-living", name: "Я ушёл", cat: "safety", before: "Свет и прибор включены", trigger: "Команда «Я ушёл»", result: "Выбранные устройства выключены", reason: "Выключатель отключает основной свет. Умная розетка обесточивает подключённый прибор пользователя.", products: ["SWITCH_2", "SBDV-00123W"], effect: "away", requiresHub: true, sourceUrl: SOURCE.lighting, shortNote: "Официальный бытовой сюжет" },
-      { id: "warm-living", name: "Комфортное тепло", cat: "climate", before: "В комнате прохладно", trigger: "Температура ниже цели", result: "Радиатор начал нагрев", reason: "Датчик передаёт температуру, терморегулятор открывает радиатор. Радиатор — существующий прибор пользователя.", products: ["SBDV-00079", "SBDV-00185"], effect: "climate", requiresHub: true, sourceUrl: SOURCE.living, shortNote: "Официальное решение по комнате" },
+      { id: "warm-living", name: "Комфортное тепло", cat: "climate", before: "В комнате 22 °C — цель достигнута", trigger: "Становится холоднее выбранной температуры", result: "Терморегулятор увеличивает подачу тепла", reason: "Датчик передаёт температуру, терморегулятор открывает радиатор. Радиатор — существующий прибор пользователя.", products: ["SBDV-00079", "SBDV-00185"], effect: "climate", requiresHub: true, sourceUrl: SOURCE.living, shortNote: "Официальное решение по комнате" },
     ],
   },
   {
     id: "bedroom", name: "Спальня", asset: "bedroom", sourceUrl: SOURCE.bedroom, shortNote: "Официальное решение по комнате",
     intro: "Один сценарий помогает закончить день, другой — проснуться в комфортном свете.",
     hotspots: [
-      { id: "switch", label: "Выключатель AtlasDesign", sku: "SWITCH_2", x: 18, y: 45, scene: "sleep" },
-      { id: "lamp", label: "Умная лампа", sku: "SBDV-00120", x: 51, y: 27, scene: "morning" },
-      { id: "button", label: "Сценарная кнопка", sku: "SBDV-00032", x: 62, y: 69, scene: "sleep" },
-      { id: "radiator", label: "Терморегулятор радиатора", sku: "SBDV-00185", x: 88, y: 62, scene: "warm-bedroom" },
+      { id: "switch", label: "Выключатель AtlasDesign · у входа, вне кадра", sku: "SWITCH_2", x: 8, y: 56, scene: "sleep", outboard: true },
+      { id: "lamp", label: "Умная лампа · в прикроватном светильнике", sku: "SBDV-00120", x: 39, y: 45, scene: "morning" },
+      { id: "button", label: "Сценарная кнопка · на тумбе у кровати", sku: "SBDV-00032", x: 46, y: 58, scene: "sleep" },
+      { id: "radiator", label: "Терморегулятор · на радиаторе", sku: "SBDV-00185", x: 77, y: 62, scene: "warm-bedroom" },
     ],
     scenarios: [
       { id: "sleep", name: "Пора спать", cat: "light", before: "Основной свет включён", trigger: "Нажата кнопка у кровати", result: "Свет выключен", reason: "Кнопка запускает сценарий. Выключатель отключает обычный потолочный свет.", products: ["SBDV-00032", "SWITCH_2"], effect: "away", requiresHub: true, sourceUrl: SOURCE.bedroom, shortNote: "Официальное решение по комнате" },
       { id: "morning", name: "Доброе утро", cat: "light", before: "Комната тёмная", trigger: "Наступило заданное время", result: "Умная лампа включилась", reason: "Умная лампа плавно создаёт утренний свет по расписанию. Обычный выключатель не регулирует цвет.", products: ["SBDV-00120"], effect: "light", requiresHub: false, sourceUrl: SOURCE.lighting, shortNote: "Официальный бытовой сюжет" },
-      { id: "warm-bedroom", name: "Комфортное тепло", cat: "climate", before: "Температура ниже цели", trigger: "Датчик видит 20 °C", result: "Радиатор начал нагрев", reason: "Терморегулятор меняет подачу тепла на радиаторе. Датчик показывает температуру и влажность.", products: ["SBDV-00079", "SBDV-00185"], effect: "climate", requiresHub: true, sourceUrl: SOURCE.bedroom, shortNote: "Официальное решение по комнате" },
+      { id: "warm-bedroom", name: "Комфортное тепло", cat: "climate", before: "В комнате 22 °C — цель достигнута", trigger: "Становится холоднее выбранной температуры", result: "Терморегулятор увеличивает подачу тепла", reason: "Терморегулятор меняет подачу тепла на радиаторе. Датчик показывает температуру и влажность.", products: ["SBDV-00079", "SBDV-00185"], effect: "climate", requiresHub: true, sourceUrl: SOURCE.bedroom, shortNote: "Официальное решение по комнате" },
     ],
   },
   {
     id: "nursery", name: "Детская", asset: "nursery", sourceUrl: SOURCE.nursery, shortNote: "Официальное решение по комнате",
     intro: "Ночник помогает заснуть, а датчик показывает климат без лишних действий.",
     hotspots: [
-      { id: "nightlight", label: "Умный ночник", sku: "SBDV-00127", x: 31, y: 51, scene: "soft-night" },
-      { id: "temperature", label: "Датчик климата", sku: "SBDV-00079", x: 72, y: 39, scene: "climate-control" },
-      { id: "button", label: "Сценарная кнопка", sku: "SBDV-00032", x: 62, y: 74, scene: "soft-night" },
-      { id: "switch", label: "Выключатель AtlasDesign", sku: "SWITCH_2", x: 88, y: 55, scene: "nursery-main" },
+      { id: "nightlight", label: "Умный ночник · на письменном столе", sku: "SBDV-00127", x: 84, y: 48, scene: "soft-night" },
+      { id: "temperature", label: "Датчик климата · на внутренней стене", sku: "SBDV-00079", x: 15, y: 28, scene: "climate-control" },
+      { id: "button", label: "Сценарная кнопка · у кровати", sku: "SBDV-00032", x: 28, y: 62, scene: "soft-night" },
+      { id: "switch", label: "Выключатель AtlasDesign · у входа, вне кадра", sku: "SWITCH_2", x: 92, y: 57, scene: "nursery-main", outboard: true },
     ],
     scenarios: [
       { id: "soft-night", name: "Мягкий ночник", cat: "light", before: "Пора укладываться", trigger: "Нажата кнопка", result: "Ночник включён", reason: "Сценарная кнопка включает ночник. Яркость и цвет меняются на самом ночнике.", products: ["SBDV-00032", "SBDV-00127"], effect: "light", requiresHub: true, sourceUrl: SOURCE.nursery, shortNote: "Официальное решение по комнате" },
@@ -129,10 +132,10 @@ const ROOMS = [
     id: "kitchen", name: "Кухня", asset: "kitchen", sourceUrl: SOURCE.kitchen, shortNote: "Официальное решение по комнате",
     intro: "Дом предупреждает о воде и помогает выключить подключённый прибор.",
     hotspots: [
-      { id: "water", label: "Датчик протечки", sku: "SBDV-00154", x: 34, y: 76, scene: "water-watch" },
-      { id: "socket", label: "Умная розетка", sku: "SBDV-00123W", x: 68, y: 48, scene: "appliance-off" },
-      { id: "switch", label: "Выключатель AtlasDesign", sku: "SWITCH_2", x: 88, y: 42, scene: "kitchen-light" },
-      { id: "motion", label: "Датчик движения", sku: "SBDV-00029", x: 53, y: 23, scene: "kitchen-light" },
+      { id: "water", label: "Датчик протечки · на полу под мойкой", sku: "SBDV-00154", x: 87, y: 86, scene: "water-watch" },
+      { id: "socket", label: "Умная розетка · у рабочей зоны", sku: "SBDV-00123W", x: 78, y: 53, scene: "appliance-off" },
+      { id: "switch", label: "Выключатель AtlasDesign · на стене у входа", sku: "SWITCH_2", x: 8, y: 57, scene: "kitchen-light" },
+      { id: "motion", label: "Датчик движения · верх колонны с обзором", sku: "SBDV-00029", x: 13, y: 17, scene: "kitchen-light" },
     ],
     scenarios: [
       { id: "water-watch", name: "Вода под контролем", cat: "safety", before: "Пол сухой", trigger: "Вода попала на датчик", result: "Пришло уведомление", reason: "Датчик протечки сообщает о воде. Сам по себе он не закрывает кран.", products: ["SBDV-00154"], effect: "water", requiresHub: true, sourceUrl: SOURCE.kitchen, shortNote: "Официальное решение по комнате" },
@@ -144,10 +147,10 @@ const ROOMS = [
     id: "bath", name: "Ванная", asset: "bath", sourceUrl: SOURCE.bath, shortNote: "Официальное решение по комнате",
     intro: "Базовый вариант сообщает о воде, расширенный действительно перекрывает краны.",
     hotspots: [
-      { id: "water", label: "Датчик протечки", sku: "SBDV-00154", x: 26, y: 78, scene: "bath-leak" },
-      { id: "protection", label: "Система защиты", sku: "O2U152W1R", x: 72, y: 70, scene: "water-stop" },
-      { id: "switch", label: "Выключатель AtlasDesign", sku: "SWITCH_2", x: 87, y: 41, scene: "bath-light" },
-      { id: "motion", label: "Датчик движения", sku: "SBDV-00029", x: 48, y: 25, scene: "bath-light" },
+      { id: "water", label: "Датчик протечки · на полу у сантехники", sku: "SBDV-00154", x: 74, y: 86, scene: "bath-leak" },
+      { id: "protection", label: "Система защиты · у ввода воды, вне кадра", sku: "O2U152W1R", x: 90, y: 72, scene: "water-stop", outboard: true },
+      { id: "switch", label: "Выключатель AtlasDesign · у входа, вне кадра", sku: "SWITCH_2", x: 8, y: 53, scene: "bath-light", outboard: true },
+      { id: "motion", label: "Датчик движения · верх стены с обзором", sku: "SBDV-00029", x: 88, y: 14, scene: "bath-light" },
     ],
     scenarios: [
       { id: "bath-leak", name: "Протечка замечена", cat: "safety", before: "Пол сухой", trigger: "Появилась вода", result: "Пришло уведомление", reason: "Беспроводной датчик сообщает о протечке. Закрытие воды в этот состав не входит.", products: ["SBDV-00154"], effect: "water", requiresHub: true, sourceUrl: SOURCE.bath, shortNote: "Официальное решение по комнате" },
@@ -159,9 +162,9 @@ const ROOMS = [
     id: "toilet", name: "Туалет", asset: "toilet", sourceUrl: SOURCE.scenarios, shortNote: "Демо-сценарий",
     intro: "Компактный набор света и защиты использует те же проверенные устройства.",
     hotspots: [
-      { id: "water", label: "Датчик протечки", sku: "SBDV-00154", x: 28, y: 75, scene: "toilet-leak" },
-      { id: "switch", label: "Выключатель AtlasDesign", sku: "SWITCH_1", x: 82, y: 43, scene: "toilet-light" },
-      { id: "motion", label: "Датчик движения", sku: "SBDV-00029", x: 52, y: 24, scene: "toilet-light" },
+      { id: "water", label: "Датчик протечки · на полу под раковиной", sku: "SBDV-00154", x: 77, y: 86, scene: "toilet-leak" },
+      { id: "switch", label: "Выключатель AtlasDesign · у входа, вне кадра", sku: "SWITCH_1", x: 8, y: 55, scene: "toilet-light", outboard: true },
+      { id: "motion", label: "Датчик движения · верх стены с обзором", sku: "SBDV-00029", x: 14, y: 14, scene: "toilet-light" },
     ],
     scenarios: [
       { id: "toilet-leak", name: "Протечка", cat: "safety", before: "Пол сухой", trigger: "Датчик намок", result: "Пришло уведомление", reason: "Датчик протечки отправляет событие через хаб. Автоматического перекрытия воды в этом составе нет.", products: ["SBDV-00154"], effect: "water", requiresHub: true, sourceUrl: SOURCE.scenarios, shortNote: "Демо-сценарий на официальных устройствах" },
@@ -252,9 +255,18 @@ const app = document.querySelector("#app");
 const toast = document.querySelector("#toast");
 let catalog = [];
 let catalogBySku = new Map();
-let demoTimer = null;
 let toastTimer = null;
 let state = loadState();
+let viewHistory = [];
+
+const demoTimeline = new DemoTimeline({
+  reducedMotion: () => window.matchMedia("(prefers-reduced-motion: reduce)").matches,
+  onPhase: (phase, context) => {
+    if (!context || state.view !== "room" || state.room !== context.roomId || state.activeScenario[context.roomId] !== context.sceneId) return;
+    state.demoPhase = phase;
+    render();
+  },
+});
 
 function loadState() {
   try {
@@ -370,8 +382,14 @@ function sceneForRoom(room) {
   return room.scenarios.find((scene) => scene.id === id) || room.scenarios.find((scene) => scene.cat === state.activeCategory) || room.scenarios[0];
 }
 
-function setView(view) {
+function setView(view, { record = true, resetHistory = false } = {}) {
   stopDemo();
+  if (resetHistory) viewHistory = [];
+  else if (record && state.view !== view) {
+    if (viewHistory.at(-1) === view) viewHistory.pop();
+    else viewHistory.push(state.view);
+    if (viewHistory.length > 24) viewHistory = viewHistory.slice(-24);
+  }
   state.view = view;
   state.checkoutComplete = view === "checkout" ? state.checkoutComplete : false;
   render();
@@ -379,9 +397,50 @@ function setView(view) {
 }
 
 function stopDemo() {
-  if (demoTimer) clearTimeout(demoTimer);
-  demoTimer = null;
+  demoTimeline.stop();
   state.demoPhase = "idle";
+}
+
+function runDemo(roomId = state.room, sceneId = state.activeScenario[roomId]) {
+  const scene = findScenario(roomId, sceneId);
+  if (!scene) return;
+  demoTimeline.start({ roomId, sceneId });
+}
+
+function revealRoomStage() {
+  const stage = document.querySelector(".room-stage");
+  if (!stage) return;
+  const headerHeight = document.querySelector(".site-header")?.getBoundingClientRect().height || 0;
+  const rect = stage.getBoundingClientRect();
+  const visibleTop = headerHeight + 12;
+  if (rect.top >= visibleTop && rect.bottom <= window.innerHeight - 12) return;
+  const top = Math.max(0, window.scrollY + rect.top - visibleTop);
+  window.scrollTo({ top, behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+}
+
+function activateScene(roomId, sceneId, selectedDevice = null, { revealStage = false } = {}) {
+  const scene = findScenario(roomId, sceneId);
+  if (!scene) return;
+  stopDemo();
+  state.room = roomId;
+  state.activeCategory = scene.cat;
+  state.activeScenario[roomId] = scene.id;
+  state.selectedDevice = selectedDevice;
+  runDemo(roomId, scene.id);
+  if (revealStage) revealRoomStage();
+}
+
+function goBack() {
+  stopDemo();
+  const previous = viewHistory.pop() || "home";
+  state.view = previous;
+  state.checkoutComplete = previous === "checkout" ? state.checkoutComplete : false;
+  render();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function backButtonMarkup(label = "Назад") {
+  return `<div class="inner-back"><button class="back-button" type="button" data-action="go-back" aria-label="${esc(label)}">← ${esc(label)}</button></div>`;
 }
 
 function showToast(message) {
@@ -422,6 +481,7 @@ function renderHome() {
   return `<div class="page">
     <section class="hero"><div class="shell hero-grid">
       <div class="hero-copy">
+        <img class="hero-brand-logo" src="./assets/sber-smart-home-logo.jpg?v=20261118.3" alt="Умный дом Sber" />
         <p class="eyebrow">Умный дом в действии</p>
         <h1>Посмотрите, как работает умный дом</h1>
         <p class="lead">Выберите комнату, нажмите на устройство и увидьте бытовой сценарий. Затем соберите свой комплект по задачам и бюджету.</p>
@@ -444,40 +504,134 @@ function renderHome() {
   </div>`;
 }
 
+function activeVisualHotspots(room, scene) {
+  const spots = [...room.hotspots];
+  const climatePoint = room.id === "bedroom" ? { x: 18, y: 34 } : { x: 52, y: 44 };
+  const protectionPoint = room.id === "toilet" ? { x: 90, y: 76, outboard: true } : { x: 90, y: 72, outboard: true };
+  const virtuals = [
+    { sku: "SBDV-00079", id: "virtual-climate", label: "Датчик климата · на внутренней стене", ...climatePoint },
+    { sku: "O2U152W1R", id: "virtual-protection", label: "Система защиты · у ввода воды, вне кадра", ...protectionPoint },
+    { sku: "O2U202W1R", id: "virtual-protection-34", label: "Система защиты · у ввода воды, вне кадра", ...protectionPoint },
+  ];
+  virtuals.forEach((virtual) => {
+    if (scene.products.includes(virtual.sku) && !spots.some((spot) => spot.sku === virtual.sku)) spots.push({ ...virtual, scene: scene.id, virtual: true });
+  });
+  return spots;
+}
+
+function sceneHotspotRoles(room, scene, visualSpots = activeVisualHotspots(room, scene)) {
+  const mode = sceneVisualMode(scene);
+  const spots = visualSpots.filter((spot) => scene.products.includes(spot.sku) || (scene.requiresHub && spot.sku === "SBDV-00068"));
+  const bySku = (...skus) => spots.find((spot) => skus.includes(spot.sku));
+  let trigger = null;
+  let result = null;
+  if (mode === "motion-light") {
+    trigger = bySku("SBDV-00029");
+    result = bySku("SWITCH_1", "SWITCH_2", "SBDV-00033", "SBDV-00115", "SBDV-00120");
+  } else if (mode === "heat") {
+    trigger = bySku("SBDV-00079");
+    result = bySku("SBDV-00185");
+  } else if (mode === "monitor") {
+    trigger = bySku("SBDV-00079");
+    result = trigger;
+  } else if (mode === "leak-alert") {
+    trigger = bySku("SBDV-00154");
+  } else if (mode === "water-stop") {
+    trigger = bySku("SBDV-00154", "O2U152W1R", "O2U202W1R");
+    result = bySku("O2U152W1R", "O2U202W1R") || trigger;
+  } else if (mode === "opening-alert") {
+    trigger = bySku("SBDV-00030");
+    result = bySku("SBDV-00068");
+  } else if (mode === "power-off") {
+    result = bySku("SBDV-00123W");
+  } else if (mode === "light-off") {
+    trigger = bySku("SBDV-00032");
+    result = bySku("SWITCH_1", "SWITCH_2", "SBDV-00033", "SBDV-00123W") || spots[0];
+  } else {
+    trigger = bySku("SBDV-00030", "SBDV-00032", "SWITCH_1", "SWITCH_2");
+    result = bySku("SBDV-00033", "SBDV-00115", "SBDV-00120", "SBDV-00127") || spots.find((spot) => spot !== trigger && (spot.sku === "SWITCH_1" || spot.sku === "SWITCH_2")) || spots.find((spot) => spot !== trigger) || trigger;
+  }
+  trigger ||= spots[0] || null;
+  result ||= mode.includes("alert") ? null : spots.find((spot) => spot !== trigger) || trigger;
+  return { trigger, result };
+}
+
+function stageConnectionMarkup(roles, snapshot) {
+  if (snapshot.phase === "idle") return "";
+  const from = roles.trigger ? [roles.trigger.x, roles.trigger.y] : [88, 16];
+  const to = roles.result ? [roles.result.x, roles.result.y] : [88, 16];
+  const [toX, toY] = from[0] === to[0] && from[1] === to[1] ? [Math.min(94, to[0] + 8), Math.max(8, to[1] - 10)] : to;
+  return `<svg class="scene-connection" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><path d="M ${from[0]} ${from[1]} L ${toX} ${toY}"/><circle cx="${from[0]}" cy="${from[1]}" r="1.5"/><circle cx="${toX}" cy="${toY}" r="1.8"/></svg>`;
+}
+
+function stageReadoutMarkup(snapshot, side = "right") {
+  const card = snapshot.card;
+  if (card.kind === "climate") {
+    const target = card.targetTemperature == null ? "" : `<div><span>Цель</span><strong>${card.targetTemperature.toFixed(0)}°</strong></div>`;
+    const valve = card.valvePercent == null ? "" : `<div class="valve-readout"><span>Клапан</span><strong>${card.valvePercent}%</strong><i style="--valve:${card.valvePercent}%"></i></div>`;
+    return `<div class="stage-readout climate-readout ${side}" data-demo-readout="climate"><small>${esc(card.label)}</small><div class="readout-metrics"><div><span>Сейчас</span><strong data-demo-current-temp="${card.temperature}">${card.temperature.toFixed(1).replace(".0", "")}°</strong></div>${target}<div><span>Влажность</span><strong>${card.humidity}%</strong></div>${valve}</div></div>`;
+  }
+  if (card.kind === "water") {
+    return `<div class="stage-readout state-readout ${side}" data-demo-readout="water"><span class="readout-icon">${card.wet ? "💧" : "✓"}</span><div><small>${card.wet ? "Контроль воды" : "Система в ожидании"}</small><strong>${esc(card.notification)}</strong>${card.valve ? `<em>Краны: <b data-demo-valve>${esc(card.valve)}</b></em>` : `<em>Перекрытие воды не входит в этот состав</em>`}</div></div>`;
+  }
+  const icon = card.kind === "alert" ? "!" : card.kind === "power" ? "⌁" : card.on ? "☀" : "◐";
+  return `<div class="stage-readout state-readout ${side}" data-demo-readout="${card.kind}"><span class="readout-icon">${icon}</span><div><small>${card.kind === "alert" ? "Уведомления" : card.kind === "power" ? "Питание" : "Состояние света"}</small><strong>${esc(card.notification)}</strong></div></div>`;
+}
+
+function storyStepMarkup(label, text, step, snapshot) {
+  const status = snapshot.steps[step];
+  const statusText = status === "active" ? (step === "result" ? "Готово" : "Сейчас") : status === "complete" ? "Выполнено" : "Ожидание";
+  return `<div class="story-step ${status}" data-demo-step="${step}" data-state="${status}"><span class="step-state">${statusText}</span><b>${label}</b><p>${esc(text)}</p></div>`;
+}
+
 function renderRoom() {
   const room = findRoom(state.room) || ROOMS[0];
   const active = sceneForRoom(room);
   state.activeScenario[room.id] = active.id;
+  const snapshot = createDemoSnapshot(active, state.demoPhase);
+  const visualSpots = activeVisualHotspots(room, active);
+  const roles = sceneHotspotRoles(room, active, visualSpots);
   const selectedKey = sceneKey(room.id, active.id);
   const selected = state.selectedScenes.includes(selectedKey);
   const switchUsed = room.hotspots.some((spot) => spot.sku === "SWITCH_1" || spot.sku === "SWITCH_2");
-  const detailSpot = room.hotspots.find((spot) => spot.id === state.selectedDevice) || room.hotspots.find((spot) => spot.scene === active.id) || room.hotspots[0];
+  const detailSpot = room.hotspots.find((spot) => spot.id === state.selectedDevice) || roles.trigger || roles.result || room.hotspots[0];
   const detailProduct = product(detailSpot.sku);
-  const status = state.demoPhase === "running" ? active.trigger : state.demoPhase === "done" ? active.result : "Нажмите «Запустить демонстрацию»";
+  const runLabel = snapshot.phase === "idle" ? "Запустить демонстрацию" : snapshot.phase === "done" ? "Повторить" : "Сценарий идёт…";
+  const phaseLabel = { idle: "До", event: "Событие", action: "Срабатывание", done: "Результат" }[snapshot.phase];
+  const fxSpot = roles.result || roles.trigger || detailSpot;
+  const readoutSide = roles.trigger?.x > 50 ? "left" : "right";
   return `<div class="page room-page"><div class="shell">
+    ${backButtonMarkup()}
     <div class="room-rail" role="tablist" aria-label="Комнаты квартиры">
       ${ROOMS.map((item) => `<button class="room-tab ${item.id === room.id ? "active" : ""}" type="button" data-action="select-room" data-room="${item.id}" role="tab" aria-selected="${item.id === room.id}"><img src="${ROOM_ASSET(item.asset)}" alt="" /><span>${item.name}</span></button>`).join("")}
     </div>
     <div class="room-workspace">
       <section class="room-main">
-        <div class="room-main-head"><div><p class="eyebrow">Комната ${ROOMS.findIndex((item) => item.id === room.id) + 1} из 8</p><h2>${room.name}</h2><p>${room.intro}</p></div>
+        <div class="room-main-head"><div><p class="eyebrow">Комната ${ROOMS.findIndex((item) => item.id === room.id) + 1} из 8</p><h2>${room.name}</h2><p>${room.intro}</p><small class="placement-note">Точки показаны ориентировочно и не заменяют проект монтажа.</small></div>
           ${switchUsed ? `<div class="switch-toggle"><span>Выключатель</span><button type="button" class="${state.switchColor === "white" ? "active" : ""}" data-action="set-switch" data-color="white">Белый</button><button type="button" class="${state.switchColor === "carbon" ? "active" : ""}" data-action="set-switch" data-color="carbon">Карбон</button></div>` : ""}
         </div>
-        <div class="room-stage ${state.demoPhase !== "idle" ? `demo-${active.effect}` : ""}">
+        <div class="room-stage mode-${snapshot.mode} phase-${snapshot.phase}" data-demo-phase="${snapshot.phase}" data-demo-mode="${snapshot.mode}" style="--room-aspect:${ROOM_ASPECT[room.id]};--fx-x:${fxSpot.x}%;--fx-y:${fxSpot.y}%">
           <img src="${ROOM_ASSET(room.asset)}" alt="Интерьер: ${room.name}" />
           <div class="stage-shade"></div><div class="scene-glow"></div><div class="heat-wave"></div><div class="water-wave"></div><div class="motion-path"></div>
-          ${room.hotspots.map((spot) => hotspotMarkup(spot, detailSpot.id === spot.id)).join("")}
-          <div class="demo-status">${esc(status)}</div>
+          ${stageConnectionMarkup(roles, snapshot)}
+          ${visualSpots.map((spot) => hotspotMarkup(spot, detailSpot.id === spot.id, roles, snapshot.phase)).join("")}
+          ${stageReadoutMarkup(snapshot, readoutSide)}
+          ${snapshot.phase === "idle" ? "" : `<div class="demo-status ${readoutSide}" role="status" aria-live="polite"><span>${phaseLabel}</span><strong>${esc(snapshot.message)}</strong></div>`}
         </div>
       </section>
       <aside class="room-side">
-        <div class="room-side-top"><div><h3>${active.name}</h3><p class="subtle">Что происходит и какие устройства нужны</p></div><span class="source-badge">${esc(active.shortNote.includes("Демо") ? "Демо-сценарий" : "Источник Sber")}</span></div>
+        <div class="room-side-top"><div><h3>${active.name}</h3><p class="subtle">Нажмите устройство или сценарий — демонстрация запустится сразу</p></div><span class="source-badge">${esc(active.shortNote.includes("Демо") ? "Демо-сценарий" : "Источник Sber")}</span></div>
         <div class="category-tabs">${Object.entries(CATEGORIES).map(([id, cat]) => { const available = room.scenarios.some((scene) => scene.cat === id); return `<button class="chip ${state.activeCategory === id ? "active" : ""}" type="button" data-action="select-category" data-category="${id}" ${available ? "" : "disabled"}>${cat.short}</button>`; }).join("")}</div>
         <div class="scenario-list">${room.scenarios.filter((scene) => scene.cat === state.activeCategory).map((scene) => `<button class="scenario-option ${scene.id === active.id ? "active" : ""}" type="button" data-action="select-scenario" data-room="${room.id}" data-scenario="${scene.id}"><strong>${scene.name}</strong><span>${scene.trigger} → ${scene.result}</span></button>`).join("") || `<p class="subtle">В этой комнате пока нет сценария выбранной категории.</p>`}</div>
         <div class="scenario-story">
-          <div class="story-flow"><div class="story-step"><b>До</b>${active.before}</div><div class="story-arrow">→</div><div class="story-step"><b>Событие</b>${active.trigger}</div><div class="story-arrow">→</div><div class="story-step"><b>Результат</b>${active.result}</div></div>
+          <div class="story-flow four-steps">${[
+            storyStepMarkup("До", active.before, "before", snapshot),
+            storyStepMarkup("Событие", active.trigger, "event", snapshot),
+            storyStepMarkup("Срабатывание", snapshot.action, "action", snapshot),
+            storyStepMarkup("Результат", active.result, "result", snapshot),
+          ].join(`<div class="story-arrow" aria-hidden="true">→</div>`)}</div>
           <p class="subtle">${active.reason}</p>
-          <div class="scenario-actions"><button class="secondary" type="button" data-action="run-demo">${state.demoPhase === "idle" ? "Запустить демонстрацию" : "Повторить"}</button><button class="primary ${selected ? "green" : ""}" type="button" data-action="toggle-scene" data-room="${room.id}" data-scenario="${active.id}">${selected ? "В комплекте ✓" : "Добавить сценарий"}</button></div>
+          <div class="scenario-actions"><button class="secondary" type="button" data-action="run-demo">${runLabel}</button><button class="primary ${selected ? "green" : ""}" type="button" data-action="toggle-scene" data-room="${room.id}" data-scenario="${active.id}">${selected ? "В комплекте ✓" : "Добавить сценарий"}</button></div>
         </div>
         <div class="device-detail"><div class="device-detail-inner"><img src="${PRODUCT_ASSET(detailProduct.sku)}" alt="${esc(productName(detailProduct.sku))}" /><div><strong>${esc(productName(detailProduct.sku))}</strong><small>${detailProduct.sku}</small><div class="price">${formatPrice(detailProduct.rrc)}</div></div></div></div>
       </aside>
@@ -485,9 +639,12 @@ function renderRoom() {
   </div></div>`;
 }
 
-function hotspotMarkup(spot, selected) {
+function hotspotMarkup(spot, selected, roles, phase) {
   const item = product(spot.sku);
-  return `<button class="device-hotspot ${selected ? "selected" : ""}" style="left:${spot.x}%;top:${spot.y}%" type="button" data-action="select-device" data-device="${spot.id}" data-scene="${spot.scene}" data-label="${esc(spot.label)}" aria-label="${esc(spot.label)}"><img src="${PRODUCT_ASSET(item.sku)}" alt="" /></button>`;
+  const role = spot === roles.trigger && spot === roles.result ? "trigger result" : spot === roles.trigger ? "trigger" : spot === roles.result ? "result" : "";
+  const participating = role ? "participating" : "";
+  const edge = spot.x < 20 ? "edge-left" : spot.x > 80 ? "edge-right" : "";
+  return `<button class="device-hotspot ${selected ? "selected" : ""} ${spot.virtual ? "virtual" : ""} ${spot.outboard ? "outboard" : ""} ${edge} ${participating} ${role} phase-${phase}" style="left:${spot.x}%;top:${spot.y}%" type="button" data-action="select-device" data-device="${spot.id}" data-scene="${spot.scene}" data-demo-role="${role || "idle"}" data-label="${esc(spot.label)}" aria-label="${esc(spot.label)}"><img src="${PRODUCT_ASSET(item.sku)}" alt="" /></button>`;
 }
 
 function renderPicker() {
@@ -495,6 +652,7 @@ function renderPicker() {
   const details = selectionDetails(rec.keys, {});
   const roomSummary = [...details.perRoom].map(([roomId, data]) => `<div class="rec-room"><div><strong>${findRoom(roomId).name}</strong><span>${data.scenarios.map((scene) => scene.name).join(", ")}</span></div><b>${data.scenarios.length}</b></div>`).join("");
   return `<div class="page picker-page"><div class="shell">
+    ${backButtonMarkup()}
     <div class="stepper" aria-label="Шаг 1 из 3"><span class="active"></span><span></span><span></span></div>
     <div class="picker-head"><div><p class="eyebrow">Демонстрационный подбор</p><h1>Что вы хотите добавить в свой дом?</h1></div><p>Выберите несколько задач, комнаты и бюджет. Хаб будет добавлен автоматически, если он нужен для выбранных устройств.</p></div>
     <div class="picker-grid"><div>
@@ -535,8 +693,9 @@ function readyCard(room) {
 
 function renderBundle() {
   const details = selectionDetails();
-  if (!state.selectedScenes.length) return `<div class="page bundle-page"><div class="shell"><div class="bundle-head"><div><p class="eyebrow">Шаг 3 из 3</p><h1>Мой комплект</h1></div><p>Здесь соберутся выбранные сценарии и необходимые устройства.</p></div><div class="empty-state"><div class="empty-icon">⌂</div><h3>Комплект пока пуст</h3><p>Попробуйте сценарий в квартире или получите рекомендацию по задачам и бюджету.</p><div class="cta-row" style="justify-content:center"><button class="primary green" type="button" data-action="select-room" data-room="living">Исследовать квартиру</button><button class="secondary" type="button" data-action="go-picker">Подобрать комплект</button></div></div></div></div>`;
+  if (!state.selectedScenes.length) return `<div class="page bundle-page"><div class="shell">${backButtonMarkup()}<div class="bundle-head"><div><p class="eyebrow">Шаг 3 из 3</p><h1>Мой комплект</h1></div><p>Здесь соберутся выбранные сценарии и необходимые устройства.</p></div><div class="empty-state"><div class="empty-icon">⌂</div><h3>Комплект пока пуст</h3><p>Попробуйте сценарий в квартире или получите рекомендацию по задачам и бюджету.</p><div class="cta-row" style="justify-content:center"><button class="primary green" type="button" data-action="select-room" data-room="living">Исследовать квартиру</button><button class="secondary" type="button" data-action="go-picker">Подобрать комплект</button></div></div></div></div>`;
   return `<div class="page bundle-page"><div class="shell">
+    ${backButtonMarkup()}
     <div class="stepper" aria-label="Шаг 3 из 3"><span class="active"></span><span class="active"></span><span class="active"></span></div>
     <div class="bundle-head"><div><p class="eyebrow">Проверка состава</p><h1>Мой комплект</h1></div><p>Сценарии сохраняются по комнатам. Одинаковое устройство внутри комнаты не дублируется, общий хаб учитывается один раз.</p></div>
     <div class="bundle-layout"><div><section class="panel"><h3>Сценарии по комнатам</h3>
@@ -555,16 +714,17 @@ function productRow(item) {
 
 function renderCheckout() {
   const details = selectionDetails();
-  if (state.checkoutComplete) return `<div class="page bundle-page"><div class="shell"><div class="checkout-box checkout-success"><div class="success-mark">✓</div><p class="eyebrow">Демонстрационный заказ</p><h2>Комплект собран</h2><p>Заказ не отправлен и оплата не выполнялась. Вы можете вернуться к сценам, изменить цвет выключателя или состав комнат.</p><div class="cta-row" style="justify-content:center"><button class="primary green" type="button" data-action="select-room" data-room="${state.room}">Вернуться в квартиру</button><button class="secondary" type="button" data-action="go-bundle">Изменить комплект</button></div></div></div></div>`;
-  return `<div class="page bundle-page"><div class="shell"><div class="bundle-head"><div><p class="eyebrow">Демо-корзина</p><h1>Оформление</h1></div><p>Это публичный прототип. Он не собирает персональные данные и не проводит оплату.</p></div><div class="checkout-box"><h3>Комплект для ${details.perRoom.size} ${details.perRoom.size === 1 ? "комнаты" : "комнат"}</h3><div class="summary-line"><span>${details.products.reduce((sum, item) => sum + item.qty, 0)} устройств</span><strong>${formatPrice(details.total)}</strong></div><div class="checkout-options"><div class="checkout-option"><strong>Самовывоз</strong><span>Демонстрационный способ получения</span></div><div class="checkout-option"><strong>Доставка</strong><span>Условия уточняются в реальном магазине</span></div></div><button class="primary green" type="button" data-action="confirm-order" style="width:100%">Подтвердить демо-заказ</button><button class="link-button" type="button" data-action="go-bundle">Назад к комплекту</button></div></div></div>`;
+  if (state.checkoutComplete) return `<div class="page bundle-page"><div class="shell">${backButtonMarkup()}<div class="checkout-box checkout-success"><div class="success-mark">✓</div><p class="eyebrow">Демонстрационный заказ</p><h2>Комплект собран</h2><p>Заказ не отправлен и оплата не выполнялась. Вы можете вернуться к сценам, изменить цвет выключателя или состав комнат.</p><div class="cta-row" style="justify-content:center"><button class="primary green" type="button" data-action="select-room" data-room="${state.room}">Вернуться в квартиру</button><button class="secondary" type="button" data-action="go-bundle">Изменить комплект</button></div></div></div></div>`;
+  return `<div class="page bundle-page"><div class="shell">${backButtonMarkup()}<div class="bundle-head"><div><p class="eyebrow">Демо-корзина</p><h1>Оформление</h1></div><p>Это публичный прототип. Он не собирает персональные данные и не проводит оплату.</p></div><div class="checkout-box"><h3>Комплект для ${details.perRoom.size} ${details.perRoom.size === 1 ? "комнаты" : "комнат"}</h3><div class="summary-line"><span>${details.products.reduce((sum, item) => sum + item.qty, 0)} устройств</span><strong>${formatPrice(details.total)}</strong></div><div class="checkout-options"><div class="checkout-option"><strong>Самовывоз</strong><span>Демонстрационный способ получения</span></div><div class="checkout-option"><strong>Доставка</strong><span>Условия уточняются в реальном магазине</span></div></div><button class="primary green" type="button" data-action="confirm-order" style="width:100%">Подтвердить демо-заказ</button></div></div></div>`;
 }
 
 function renderBusiness() {
   const baseKeys = state.selectedScenes.length ? state.selectedScenes : ["entry:home", "kitchen:water-watch"];
   const details = selectionDetails(baseKeys);
   const total = details.total * state.businessCount;
-  if (state.businessComplete) return `<div class="page business-page"><div class="shell"><div class="checkout-box checkout-success"><div class="success-mark">✓</div><p class="eyebrow">Демонстрационный B2B-канал</p><h2>Запрос подготовлен</h2><p>Состав для ${state.businessCount} объектов рассчитан на сумму ${formatPrice(total)}. Реальная заявка не отправлялась.</p><button class="primary green" type="button" data-action="reset-business">Изменить расчёт</button></div></div></div>`;
+  if (state.businessComplete) return `<div class="page business-page"><div class="shell">${backButtonMarkup()}<div class="checkout-box checkout-success"><div class="success-mark">✓</div><p class="eyebrow">Демонстрационный B2B-канал</p><h2>Запрос подготовлен</h2><p>Состав для ${state.businessCount} объектов рассчитан на сумму ${formatPrice(total)}. Реальная заявка не отправлялась.</p><button class="primary green" type="button" data-action="reset-business">Изменить расчёт</button></div></div></div>`;
   return `<div class="page business-page"><div class="shell">
+    ${backButtonMarkup()}
     <div class="business-head"><div><p class="eyebrow">Демонстрационный B2B-канал</p><h1>Умный дом для объектов</h1></div><p>Те же сцены можно показать заказчику, затем масштабировать выбранный состав на одинаковые квартиры или помещения.</p></div>
     <section class="business-banner"><div><span class="source-badge">Для обсуждения второго выхода CJM</span><h2>Покажите сценарии клиенту до заказа</h2><p>Откройте квартиру, соберите один типовой комплект и вернитесь сюда. Количество объектов умножит состав без изменения логики комнат.</p><button class="primary green" type="button" data-action="select-room" data-room="living">Показать сценарии</button></div><div class="business-room-stack"><img src="${ROOM_ASSET("living")}" alt="Гостиная" /><img src="${ROOM_ASSET("entry")}" alt="Прихожая" /><img src="${ROOM_ASSET("bedroom")}" alt="Спальня" /><img src="${ROOM_ASSET("kitchen")}" alt="Кухня" /></div></section>
     <div class="business-controls"><section class="panel"><h3>Количество одинаковых объектов</h3><p class="panel-intro">Для каждого объекта считается отдельный комплект и один хаб.</p><div class="count-control"><button type="button" data-action="business-minus" aria-label="Уменьшить количество">−</button><strong>${state.businessCount}</strong><button type="button" data-action="business-plus" aria-label="Увеличить количество">+</button></div></section><section class="panel"><h3>Состав одного объекта</h3><p class="panel-intro">${baseKeys.length} сценариев, ${details.products.reduce((sum, item) => sum + item.qty, 0)} устройств.</p><button class="secondary" type="button" data-action="go-bundle">Проверить состав</button></section></div>
@@ -577,7 +737,8 @@ document.addEventListener("click", (event) => {
   const button = event.target.closest("[data-action]");
   if (!button) return;
   const action = button.dataset.action;
-  if (action === "go-home") setView("home");
+  if (action === "go-home") setView("home", { resetHistory: true });
+  if (action === "go-back") goBack();
   if (action === "go-picker") setView("picker");
   if (action === "go-bundle") setView("bundle");
   if (action === "go-business") setView("business");
@@ -587,18 +748,14 @@ document.addEventListener("click", (event) => {
     const room = findRoom(state.room); const scene = room.scenarios[0]; state.activeCategory = scene.cat; state.activeScenario[room.id] = scene.id; setView("room");
   }
   if (action === "select-category") {
-    stopDemo(); state.activeCategory = button.dataset.category; const room = findRoom(state.room); const scene = room.scenarios.find((item) => item.cat === state.activeCategory); if (scene) state.activeScenario[room.id] = scene.id; state.selectedDevice = null; render();
+    const room = findRoom(state.room); const scene = room.scenarios.find((item) => item.cat === button.dataset.category); if (scene) activateScene(room.id, scene.id, null, { revealStage: true });
   }
-  if (action === "select-scenario") { stopDemo(); state.activeScenario[button.dataset.room] = button.dataset.scenario; state.selectedDevice = null; render(); }
+  if (action === "select-scenario") activateScene(button.dataset.room, button.dataset.scenario, null, { revealStage: true });
   if (action === "select-device") {
-    stopDemo(); state.selectedDevice = button.dataset.device; const room = findRoom(state.room); const scene = room.scenarios.find((item) => item.id === button.dataset.scene); if (scene) { state.activeCategory = scene.cat; state.activeScenario[room.id] = scene.id; } render();
+    activateScene(state.room, button.dataset.scene, button.dataset.device);
   }
   if (action === "set-switch") { state.switchColor = button.dataset.color === "carbon" ? "carbon" : "white"; saveState(); render(); showToast(`Выбран выключатель: ${state.switchColor === "carbon" ? "Карбон" : "Белый"}`); }
-  if (action === "run-demo") {
-    stopDemo(); state.demoPhase = "running"; render();
-    const delay = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 80 : 1250;
-    demoTimer = setTimeout(() => { state.demoPhase = "done"; render(); }, delay);
-  }
+  if (action === "run-demo") { runDemo(); revealRoomStage(); }
   if (action === "toggle-scene") {
     const key = sceneKey(button.dataset.room, button.dataset.scenario); const exists = state.selectedScenes.includes(key);
     state.selectedScenes = exists ? state.selectedScenes.filter((item) => item !== key) : [...state.selectedScenes, key]; saveState(); render(); showToast(exists ? "Сценарий удалён" : "Сценарий добавлен в комплект");

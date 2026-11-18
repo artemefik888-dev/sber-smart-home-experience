@@ -1,13 +1,16 @@
 import assert from "node:assert/strict";
 import { readFile, access } from "node:fs/promises";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 
-const root = new URL("../", import.meta.url).pathname;
+const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const catalogPath = join(root, "site/data/catalog-rrc-4q2026.json");
 const appPath = join(root, "site/assets/app.js");
+const demoPath = join(root, "site/assets/demo-engine.mjs");
 const htmlPath = join(root, "site/index.html");
 const catalog = JSON.parse(await readFile(catalogPath, "utf8"));
 const app = await readFile(appPath, "utf8");
+const demo = await readFile(demoPath, "utf8");
 const html = await readFile(htmlPath, "utf8");
 
 assert.equal(catalog.length, 45, "Каталог должен содержать 45 SKU");
@@ -39,7 +42,13 @@ for (const room of ["entry", "corridor", "living", "bedroom", "nursery", "kitche
 assert.ok(app.includes("Демонстрационный подбор"));
 assert.ok(app.includes("sourceUrl") && app.includes("shortNote"));
 assert.ok(app.includes("O2U152W1R") && app.includes("SWITCH_2"));
-assert.ok(html.includes("./assets/app.js") && html.includes("./assets/styles.css"), "Относительные пути для GitHub Pages");
+const versionedAsset = (path) => new RegExp(`${path.replaceAll(".", "\\.")}\\?v=\\d+(?:\\.\\d+)?`);
+assert.ok(versionedAsset("./assets/app.js").test(html) && versionedAsset("./assets/styles.css").test(html), "Относительные пути и cache busting для GitHub Pages");
+assert.ok(versionedAsset("sber-smart-home-logo.jpg").test(html) && versionedAsset("sber-smart-home-logo.jpg").test(app), "Фирменный логотип используется в шапке и на витрине");
+assert.ok(app.includes('data-action="go-back"') && app.includes("viewHistory"), "Внутренняя навигация содержит единый возврат");
+assert.ok(app.includes("activateScene") && app.includes("runDemo") && app.includes("data-demo-phase"), "Клики запускают демонстрацию с наблюдаемыми фазами");
+assert.ok(demo.includes("class DemoTimeline") && demo.includes('"event"') && demo.includes('"action"') && demo.includes('"done"'), "Движок событий содержит полную последовательность");
 await access(join(root, "site/assets/rooms/apartment-hero.jpg"));
+await access(join(root, "site/assets/sber-smart-home-logo.jpg"));
 
 console.log(`Проверено: ${catalog.length} SKU, 8 комнат, цены, источники, ассеты и GitHub Pages paths.`);

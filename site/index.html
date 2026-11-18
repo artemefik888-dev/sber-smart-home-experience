@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0d8f64" />
+    <meta name="description" content="Интерактивный прототип SberDevices: сценарии умного дома, подбор комплектов по комнатам и демонстрационный заказ." />
+    <title>Умный дом в действии</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22><rect width=%2264%22 height=%2264%22 rx=%2218%22 fill=%22%230e9f6e%22/><path d=%22M17 34l10 10 21-25%22 fill=%22none%22 stroke=%22white%22 stroke-width=%227%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22/></svg>" />
+    <link rel="stylesheet" href="./assets/styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#app">Перейти к содержанию</a>
+    <header class="site-header">
+      <button class="brand" type="button" data-action="go-home" aria-label="На главную">
+        <span class="brand-mark" aria-hidden="true"><span></span></span>
+        <span class="brand-name">SBER DEVICES</span>
+      </button>
+      <nav class="top-nav" aria-label="Основная навигация">
+        <button type="button" data-action="go-home">Умный дом</button>
+        <button type="button" data-action="go-picker">Подобрать</button>
+        <button type="button" data-action="go-business">Для бизнеса</button>
+      </nav>
+      <button class="cart-button" type="button" data-action="go-bundle" aria-label="Открыть мой комплект">
+        <span>Мой комплект</span>
+        <strong id="header-cart-count">0</strong>
+      </button>
+    </header>
+
+    <main id="app" tabindex="-1"></main>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+    <footer class="site-footer">
+      <div>
+        <span class="brand-name">SBER DEVICES</span>
+        <p>Кликабельный прототип «Умный дом в действии»</p>
+      </div>
+      <div class="footer-meta">
+        <span>Демонстрационный подбор</span>
+        <span>РРЦ 4Q 2026</span>
+        <span>Без оплаты и персональных данных</span>
+      </div>
+    </footer>
+
+    <noscript>Для работы прототипа включите JavaScript.</noscript>
+    <script type="module" src="./assets/app.js"></script>
+  </body>
+</html>

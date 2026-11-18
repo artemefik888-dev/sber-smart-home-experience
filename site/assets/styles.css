@@ -162,7 +162,7 @@ p { line-height: 1.55; }
 .stage-shade { position: absolute; inset: 0; pointer-events: none; background: linear-gradient(90deg, rgba(8,18,13,.08), transparent 60%); transition: background .5s ease; }
 .scene-glow { position: absolute; inset: 0; z-index: 1; pointer-events: none; opacity: 0; background: radial-gradient(circle at var(--fx-x) var(--fx-y), rgba(255,236,141,.92), transparent 32%); mix-blend-mode: screen; transition: opacity .5s ease; }
 .heat-wave { position: absolute; z-index: 2; left: calc(var(--fx-x) - 13%); top: calc(var(--fx-y) - 16%); width: 26%; height: 34%; opacity: 0; pointer-events: none; background: repeating-radial-gradient(ellipse at bottom, transparent 0 11px, rgba(255,105,46,.66) 12px 16px, transparent 17px 26px); filter: drop-shadow(0 0 12px rgba(255,151,81,.8)); transform: translateY(18px); }
-.water-wave { position: absolute; z-index: 2; left: calc(var(--fx-x) - 18%); top: calc(var(--fx-y) + 3%); width: 36%; height: 13%; opacity: 0; pointer-events: none; border-radius: 48%; background: rgba(61,181,235,.64); border: 2px solid rgba(198,242,255,.9); box-shadow: 0 0 32px rgba(53,170,229,.78); transform: scale(.25); }
+.water-wave { position: absolute; z-index: 2; left: calc(var(--fx-x) - 10%); top: calc(var(--fx-y) - 7%); width: 25%; height: 10%; opacity: 0; pointer-events: none; border-radius: 48%; background: rgba(61,181,235,.64); border: 2px solid rgba(198,242,255,.9); box-shadow: 0 0 32px rgba(53,170,229,.78); transform: scale(.25); }
 .motion-path { position: absolute; z-index: 2; left: calc(var(--fx-x) - 10%); top: calc(var(--fx-y) - 10%); width: 20%; height: 20%; opacity: 0; pointer-events: none; border: 3px solid rgba(199,236,54,.95); border-radius: 50%; box-shadow: 0 0 26px rgba(199,236,54,.9); }
 .scene-connection { position: absolute; inset: 0; z-index: 3; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
 .scene-connection path { fill: none; stroke: var(--lime); stroke-width: 1.2; stroke-linecap: round; stroke-dasharray: 4 3; vector-effect: non-scaling-stroke; filter: drop-shadow(0 0 5px rgba(199,236,54,.95)); animation: signal-line .8s linear infinite; }
@@ -415,6 +415,7 @@ input[type="range"] { width: 100%; accent-color: var(--green); }
   .room-main-head { align-items: flex-start; flex-direction: column; padding: 19px; }
   .device-hotspot { width: 50px; height: 50px; padding: 6px; border-radius: 16px; }
   .stage-readout { bottom: 10px; width: min(260px,72%); padding: 10px; }
+  .room-stage:is(.mode-leak-alert,.mode-water-stop) .stage-readout { width: 50%; }
   .stage-readout.left { left: 10px; right: auto; }
   .stage-readout.right { right: 10px; left: auto; }
   .readout-metrics strong { font-size: 17px; }

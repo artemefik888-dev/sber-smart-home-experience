@@ -47,6 +47,8 @@ assert.ok(versionedAsset("./assets/app.js").test(html) && versionedAsset("./asse
 assert.ok(versionedAsset("sber-smart-home-logo.jpg").test(html) && versionedAsset("sber-smart-home-logo.jpg").test(app), "Фирменный логотип используется в шапке и на витрине");
 assert.ok(app.includes('data-action="go-back"') && app.includes("viewHistory"), "Внутренняя навигация содержит единый возврат");
 assert.ok(app.includes("activateScene") && app.includes("runDemo") && app.includes("data-demo-phase"), "Клики запускают демонстрацию с наблюдаемыми фазами");
+assert.ok(app.includes("sceneEffectSpot") && app.includes('id: "water", label: "Датчик протечки · на полу у сантехники", sku: "SBDV-00154", x: 58, y: 91'), "Эффект протечки привязан к полу, а не к блоку защиты");
+assert.ok(app.includes('id: "water", label: "Датчик протечки · на полу у сантехники", sku: "SBDV-00154", x: 58, y: 92'), "В туалете датчик стоит на видимом полу");
 assert.ok(demo.includes("class DemoTimeline") && demo.includes('"event"') && demo.includes('"action"') && demo.includes('"done"'), "Движок событий содержит полную последовательность");
 await access(join(root, "site/assets/rooms/apartment-hero.jpg"));
 await access(join(root, "site/assets/sber-smart-home-logo.jpg"));

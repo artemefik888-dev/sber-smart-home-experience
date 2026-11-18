@@ -147,7 +147,7 @@ const ROOMS = [
     id: "bath", name: "Ванная", asset: "bath", sourceUrl: SOURCE.bath, shortNote: "Официальное решение по комнате",
     intro: "Базовый вариант сообщает о воде, расширенный действительно перекрывает краны.",
     hotspots: [
-      { id: "water", label: "Датчик протечки · на полу у сантехники", sku: "SBDV-00154", x: 74, y: 86, scene: "bath-leak" },
+      { id: "water", label: "Датчик протечки · на полу у сантехники", sku: "SBDV-00154", x: 58, y: 91, scene: "bath-leak" },
       { id: "protection", label: "Система защиты · у ввода воды, вне кадра", sku: "O2U152W1R", x: 90, y: 72, scene: "water-stop", outboard: true },
       { id: "switch", label: "Выключатель AtlasDesign · у входа, вне кадра", sku: "SWITCH_2", x: 8, y: 53, scene: "bath-light", outboard: true },
       { id: "motion", label: "Датчик движения · верх стены с обзором", sku: "SBDV-00029", x: 88, y: 14, scene: "bath-light" },
@@ -162,7 +162,7 @@ const ROOMS = [
     id: "toilet", name: "Туалет", asset: "toilet", sourceUrl: SOURCE.scenarios, shortNote: "Демо-сценарий",
     intro: "Компактный набор света и защиты использует те же проверенные устройства.",
     hotspots: [
-      { id: "water", label: "Датчик протечки · на полу под раковиной", sku: "SBDV-00154", x: 77, y: 86, scene: "toilet-leak" },
+      { id: "water", label: "Датчик протечки · на полу у сантехники", sku: "SBDV-00154", x: 58, y: 92, scene: "toilet-leak" },
       { id: "switch", label: "Выключатель AtlasDesign · у входа, вне кадра", sku: "SWITCH_1", x: 8, y: 55, scene: "toilet-light", outboard: true },
       { id: "motion", label: "Датчик движения · верх стены с обзором", sku: "SBDV-00029", x: 14, y: 14, scene: "toilet-light" },
     ],
@@ -481,7 +481,7 @@ function renderHome() {
   return `<div class="page">
     <section class="hero"><div class="shell hero-grid">
       <div class="hero-copy">
-        <img class="hero-brand-logo" src="./assets/sber-smart-home-logo.jpg?v=20261118.3" alt="Умный дом Sber" />
+        <img class="hero-brand-logo" src="./assets/sber-smart-home-logo.jpg?v=20261118.4" alt="Умный дом Sber" />
         <p class="eyebrow">Умный дом в действии</p>
         <h1>Посмотрите, как работает умный дом</h1>
         <p class="lead">Выберите комнату, нажмите на устройство и увидьте бытовой сценарий. Затем соберите свой комплект по задачам и бюджету.</p>
@@ -584,6 +584,13 @@ function storyStepMarkup(label, text, step, snapshot) {
   return `<div class="story-step ${status}" data-demo-step="${step}" data-state="${status}"><span class="step-state">${statusText}</span><b>${label}</b><p>${esc(text)}</p></div>`;
 }
 
+function sceneEffectSpot(room, snapshot, roles, detailSpot) {
+  if (snapshot.mode === "leak-alert" || snapshot.mode === "water-stop") {
+    return room.hotspots.find((spot) => spot.id === "water") || roles.trigger || detailSpot;
+  }
+  return roles.result || roles.trigger || detailSpot;
+}
+
 function renderRoom() {
   const room = findRoom(state.room) || ROOMS[0];
   const active = sceneForRoom(room);
@@ -598,7 +605,7 @@ function renderRoom() {
   const detailProduct = product(detailSpot.sku);
   const runLabel = snapshot.phase === "idle" ? "Запустить демонстрацию" : snapshot.phase === "done" ? "Повторить" : "Сценарий идёт…";
   const phaseLabel = { idle: "До", event: "Событие", action: "Срабатывание", done: "Результат" }[snapshot.phase];
-  const fxSpot = roles.result || roles.trigger || detailSpot;
+  const fxSpot = sceneEffectSpot(room, snapshot, roles, detailSpot);
   const readoutSide = roles.trigger?.x > 50 ? "left" : "right";
   return `<div class="page room-page"><div class="shell">
     ${backButtonMarkup()}

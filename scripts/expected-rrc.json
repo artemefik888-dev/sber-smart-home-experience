@@ -1,0 +1,229 @@
+{
+  "b2cExpectedTotals": {
+    "entry": {
+      "basic": {
+        "white": 6570,
+        "carbon": 6570
+      },
+      "comfort": {
+        "white": 10560,
+        "carbon": 10560
+      },
+      "max": {
+        "white": 15150,
+        "carbon": 15550
+      }
+    },
+    "kitchen": {
+      "basic": {
+        "white": 13560,
+        "carbon": 13560
+      },
+      "comfort": {
+        "white": 16750,
+        "carbon": 17250
+      },
+      "max": {
+        "white": 25320,
+        "carbon": 26320
+      }
+    },
+    "living": {
+      "basic": {
+        "white": 13170,
+        "carbon": 13670
+      },
+      "comfort": {
+        "white": 16950,
+        "carbon": 17950
+      },
+      "max": {
+        "white": 22730,
+        "carbon": 23730
+      }
+    },
+    "bedroom": {
+      "basic": {
+        "white": 14360,
+        "carbon": 15360
+      },
+      "comfort": {
+        "white": 20140,
+        "carbon": 21140
+      },
+      "max": {
+        "white": 22930,
+        "carbon": 24430
+      }
+    },
+    "nursery": {
+      "basic": {
+        "white": 12770,
+        "carbon": 13270
+      },
+      "comfort": {
+        "white": 16550,
+        "carbon": 17550
+      },
+      "max": {
+        "white": 22330,
+        "carbon": 23330
+      }
+    },
+    "bath": {
+      "basic": {
+        "white": 5370,
+        "carbon": 5370
+      },
+      "comfort": {
+        "white": 10550,
+        "carbon": 11050
+      },
+      "max": {
+        "white": 51320,
+        "carbon": 54120
+      }
+    }
+  },
+  "b2bExpectedTotals": {
+    "studio": {
+      "light": {
+        "white": 30300,
+        "carbon": 31700
+      },
+      "light_climate": {
+        "white": 46860,
+        "carbon": 50560
+      },
+      "safety": {
+        "white": 59870,
+        "carbon": 60870
+      },
+      "safety_light": {
+        "white": 74820,
+        "carbon": 77220
+      },
+      "max": {
+        "white": 91380,
+        "carbon": 96080
+      }
+    },
+    "one": {
+      "light": {
+        "white": 40480,
+        "carbon": 42380
+      },
+      "light_climate": {
+        "white": 62820,
+        "carbon": 67020
+      },
+      "safety": {
+        "white": 66860,
+        "carbon": 67860
+      },
+      "safety_light": {
+        "white": 85000,
+        "carbon": 87900
+      },
+      "max": {
+        "white": 107340,
+        "carbon": 112540
+      }
+    },
+    "two": {
+      "light": {
+        "white": 53850,
+        "carbon": 56750
+      },
+      "light_climate": {
+        "white": 71190,
+        "carbon": 74090
+      },
+      "safety": {
+        "white": 76640,
+        "carbon": 78140
+      },
+      "safety_light": {
+        "white": 101160,
+        "carbon": 105560
+      },
+      "max": {
+        "white": 129280,
+        "carbon": 135980
+      }
+    },
+    "three": {
+      "light": {
+        "white": 66620,
+        "carbon": 70020
+      },
+      "light_climate": {
+        "white": 100520,
+        "carbon": 106220
+      },
+      "safety": {
+        "white": 86420,
+        "carbon": 88420
+      },
+      "safety_light": {
+        "white": 116720,
+        "carbon": 122120
+      },
+      "max": {
+        "white": 150620,
+        "carbon": 158320
+      }
+    }
+  },
+  "caseTotals": {
+    "entry": {
+      "white": 11160,
+      "carbon": 11560
+    },
+    "nursery": {
+      "white": 15360,
+      "carbon": 15360
+    },
+    "bedroom": {
+      "white": 19740,
+      "carbon": 20740
+    },
+    "climate": {
+      "white": 21550,
+      "carbon": 23850
+    },
+    "light": null,
+    "safety": {
+      "white": 13560,
+      "carbon": 14060
+    },
+    "S": {
+      "white": 33290,
+      "carbon": 35090
+    },
+    "M": {
+      "white": 49230,
+      "carbon": 51930
+    },
+    "L": {
+      "white": 67160,
+      "carbon": 71260
+    },
+    "module_safety": {
+      "white": 29990,
+      "carbon": 29990
+    },
+    "module_climate": {
+      "white": 14770,
+      "carbon": 17070
+    },
+    "module_light": {
+      "white": 3980,
+      "carbon": 3980
+    },
+    "module_media": {
+      "white": 16989,
+      "carbon": 16989
+    }
+  }
+}
